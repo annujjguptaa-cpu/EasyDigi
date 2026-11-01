@@ -1,0 +1,103 @@
+{
+  "scenario": "motor_outside_period",
+  "policy": {
+    "policy_number": "POL-MOT-2023-003",
+    "holder_name": "Vikram Malhotra",
+    "holder_id": "CUST_VIKRAM_03",
+    "product_type": "MOTOR",
+    "start_date": "2023-01-01T00:00:00",
+    "end_date": "2023-12-31T23:59:59",
+    "sum_insured": 650000,
+    "deductible": 2000,
+    "co_pay_pct": 0.0,
+    "waiting_period_days": 0,
+    "status": "LAPSED",
+    "nominee_name": "Pooja Malhotra",
+    "nominee_relation": "SPOUSE"
+  },
+  "claim": {
+    "claim_number": "CLM-MOT-2024-8803",
+    "type": "motor_own_damage",
+    "incident_date": "2024-03-20T18:00:00",
+    "claimant_name": "Vikram Malhotra",
+    "claimant_phone": "+919876543212",
+    "requested_amount": 75000,
+    "vehicle_reg": "DL 01 AB 1234",
+    "incident_description": "Rear bumper and tailgate collision with a barrier"
+  },
+  "documents": [
+    {
+      "doc_type": "POLICY_COPY",
+      "filename": "policy_schedule.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "policy_number": "POL-MOT-2023-003",
+        "holder_name": "Vikram Malhotra",
+        "expiry_date": "2023-12-31"
+      }
+    },
+    {
+      "doc_type": "ID_PROOF",
+      "filename": "pan_card.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "id_type": "PAN",
+        "holder_name": "Vikram Malhotra",
+        "id_last4": "3344"
+      }
+    },
+    {
+      "doc_type": "DRIVING_LICENCE",
+      "filename": "dl.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "dl_number_last4": "8877",
+        "holder_name": "Vikram Malhotra",
+        "valid_upto": "2030-05-10"
+      }
+    },
+    {
+      "doc_type": "RC",
+      "filename": "rc.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "vehicle_reg": "DL 01 AB 1234",
+        "owner_name": "Vikram Malhotra",
+        "chassis_last4": "9921"
+      }
+    },
+    {
+      "doc_type": "SCENE_PHOTO",
+      "filename": "scene_photo.jpg",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "photo_count": 3,
+        "timestamp": "2024-03-20T18:15:00"
+      }
+    },
+    {
+      "doc_type": "REPAIR_ESTIMATE",
+      "filename": "estimate.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "garage_name": "Metro Auto Works",
+        "estimate_total": 75000
+      }
+    }
+  ],
+  "expected_outcome": {
+    "status": "NOT_COVERED",
+    "flags": [
+      {
+        "flag_type": "INCIDENT_OUTSIDE_POLICY_PERIOD",
+        "severity": "CRITICAL",
+        "evidence": {
+          "policy_start": "2023-01-01T00:00:00",
+          "policy_end": "2023-12-31T23:59:59",
+          "incident_date": "2024-03-20T18:00:00",
+          "note": "Incident occurred 80 days after policy expired without renewal."
+        }
+      }
+    ]
+  }
+}

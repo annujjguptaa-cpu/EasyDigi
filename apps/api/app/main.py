@@ -5,6 +5,8 @@ from app.core.config import settings
 from app.core.logging import logger
 from app.api.v1.routes import api_router
 from app.db.session import engine, Base
+import app.db.models  # Register bank models
+import app.db.insurance_models  # Register insurance models
 
 
 @asynccontextmanager

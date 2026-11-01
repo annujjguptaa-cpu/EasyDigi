@@ -1,0 +1,117 @@
+{
+  "scenario": "health_reimbursement_mismatch",
+  "policy": {
+    "policy_number": "POL-HLT-2024-002",
+    "holder_name": "Sunita Rao",
+    "holder_id": "CUST_SUNITA_02",
+    "product_type": "HEALTH",
+    "start_date": "2024-02-01T00:00:00",
+    "end_date": "2025-01-31T23:59:59",
+    "sum_insured": 800000,
+    "deductible": 0,
+    "co_pay_pct": 0.0,
+    "waiting_period_days": 30,
+    "status": "ACTIVE",
+    "nominee_name": "Kishore Rao",
+    "nominee_relation": "SPOUSE"
+  },
+  "claim": {
+    "claim_number": "CLM-HLT-2024-8802",
+    "type": "health_reimbursement",
+    "incident_date": "2024-07-10T14:30:00",
+    "claimant_name": "Sunita Rao",
+    "claimant_phone": "+919876543211",
+    "requested_amount": 185000,
+    "hospital_name": "Fortis Care Hospital",
+    "treatment": "Knee Arthroscopy"
+  },
+  "documents": [
+    {
+      "doc_type": "POLICY_COPY",
+      "filename": "policy_schedule.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "policy_number": "POL-HLT-2024-002",
+        "holder_name": "Sunita Rao",
+        "sum_insured": 800000
+      }
+    },
+    {
+      "doc_type": "ID_PROOF",
+      "filename": "aadhaar_masked.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "id_type": "AADHAAR",
+        "holder_name": "Sunita Rao",
+        "id_last4": "9012"
+      }
+    },
+    {
+      "doc_type": "DISCHARGE_SUMMARY",
+      "filename": "discharge_summary.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "hospital_name": "Fortis Care Hospital",
+        "total_bill_amount_stated": 165000,
+        "discharge_date": "2024-07-14",
+        "diagnosis": "Right Knee Meniscal Tear"
+      }
+    },
+    {
+      "doc_type": "FINAL_BILL",
+      "filename": "final_bill.pdf",
+      "status": "MISMATCH",
+      "masked_fields": {
+        "bill_number": "FB-2024-991",
+        "total_amount": 185000,
+        "itemised_breakdown_total": 185000
+      }
+    },
+    {
+      "doc_type": "ITEMISED_BILL",
+      "filename": "itemised_breakdown.pdf",
+      "status": "MISMATCH",
+      "masked_fields": {
+        "room_rent": 30000,
+        "ot_charges": 60000,
+        "surgeon_fee": 75000,
+        "pharmacy": 20000,
+        "sum_of_items": 185000
+      }
+    },
+    {
+      "doc_type": "PAID_RECEIPT",
+      "filename": "receipt.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "amount_paid": 185000,
+        "mode": "CREDIT_CARD"
+      }
+    },
+    {
+      "doc_type": "CANCELLED_CHEQUE",
+      "filename": "cheque.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "bank_name": "HDFC Bank",
+        "account_last4": "4432",
+        "ifsc": "HDFC0001234"
+      }
+    }
+  ],
+  "expected_outcome": {
+    "status": "QUERY_RAISED",
+    "flags": [
+      {
+        "flag_type": "BILL_DISCHARGE_MISMATCH",
+        "severity": "HIGH",
+        "evidence": {
+          "discharge_summary_total": 165000,
+          "final_bill_total": 185000,
+          "discrepancy": 20000,
+          "note": "Final bill and itemised bill show 1,85,000 INR while discharge summary states 1,65,000 INR."
+        }
+      }
+    ]
+  }
+}

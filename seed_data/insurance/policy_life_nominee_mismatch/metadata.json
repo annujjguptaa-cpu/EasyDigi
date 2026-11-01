@@ -1,0 +1,83 @@
+{
+  "scenario": "life_death_nominee_mismatch",
+  "policy": {
+    "policy_number": "POL-LIF-2022-005",
+    "holder_name": "Ramesh Gupta",
+    "holder_id": "CUST_RAMESH_05",
+    "product_type": "LIFE",
+    "start_date": "2022-01-01T00:00:00",
+    "end_date": "2042-12-31T23:59:59",
+    "sum_insured": 5000000,
+    "deductible": 0,
+    "co_pay_pct": 0.0,
+    "waiting_period_days": 0,
+    "status": "ACTIVE",
+    "nominee_name": "Kavita R. Gupta",
+    "nominee_relation": "SPOUSE"
+  },
+  "claim": {
+    "claim_number": "CLM-LIF-2024-8805",
+    "type": "life_death",
+    "incident_date": "2024-04-05T06:00:00",
+    "claimant_name": "Kavita Sharma",
+    "claimant_phone": "+919876543214",
+    "requested_amount": 5000000,
+    "cause_of_death": "Cardiac Arrest"
+  },
+  "documents": [
+    {
+      "doc_type": "POLICY_COPY",
+      "filename": "term_plan_schedule.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "policy_number": "POL-LIF-2022-005",
+        "insured_name": "Ramesh Gupta",
+        "nominee_recorded": "Kavita R. Gupta"
+      }
+    },
+    {
+      "doc_type": "DEATH_CERTIFICATE",
+      "filename": "death_certificate.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "deceased_name": "Ramesh Gupta",
+        "date_of_death": "2024-04-05",
+        "issuing_authority": "Municipal Corporation of Delhi"
+      }
+    },
+    {
+      "doc_type": "NOMINEE_ID",
+      "filename": "claimant_pan.pdf",
+      "status": "MISMATCH",
+      "masked_fields": {
+        "id_type": "PAN",
+        "claimant_name_on_id": "Kavita Sharma",
+        "id_last4": "7711"
+      }
+    },
+    {
+      "doc_type": "NOMINEE_BANK_CHEQUE",
+      "filename": "cancelled_cheque.pdf",
+      "status": "MISMATCH",
+      "masked_fields": {
+        "account_holder": "Kavita Sharma",
+        "account_last4": "3321",
+        "bank_name": "State Bank of India"
+      }
+    }
+  ],
+  "expected_outcome": {
+    "status": "QUERY_RAISED",
+    "flags": [
+      {
+        "flag_type": "NOMINEE_NAME_MISMATCH",
+        "severity": "HIGH",
+        "evidence": {
+          "policy_nominee": "Kavita R. Gupta",
+          "claimant_submitted_name": "Kavita Sharma",
+          "note": "Claimant surname does not match recorded nominee. Marriage certificate or gazette name change notification required."
+        }
+      }
+    ]
+  }
+}

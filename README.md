@@ -134,15 +134,38 @@ When deploying to 3 distinct domains (e.g. `bank.yourbank.com`, `verify.yourbank
 ---
 
 ## Automated Test Suite
-To verify the full end-to-end integration across all three applications:
+To verify the full end-to-end integration across all applications and modules:
 ```powershell
 cd apps/api
 python -m pytest tests/ -v
 ```
-All **40 tests** pass, covering:
+All **44 tests** pass, covering:
 - Clean slate validation (zero initial cases)
 - Single-use and 24h link expiration (410 Gone)
 - Selective document granting & consent locking
 - Inter-app notification dispatch on `wish_granted` and `wish_partial`
 - DigiLocker consent revocation and retention clock trigger
 - Department maker-checker RBAC isolation
+- Insurance claim domain models & schema validation
+- 5 fictional policyholder insurance claim seed scenarios
+
+---
+
+## DocFlow Insurance Module
+The insurance module operates alongside the loan verification flow, sharing the core zero-knowledge vault, mock DigiLocker identity provider, and deterministic processing engine.
+
+### 5 Supported Claim Types
+1. **Health Cashless (`health_cashless`)**: Emergency/planned hospitalization with 1h pre-auth & 3h final authorization.
+2. **Health Reimbursement (`health_reimbursement`)**: Post-discharge claims with cross-checks between bills and discharge summaries.
+3. **Motor Own Damage (`motor_own_damage`)**: Accident claims with scene photos, driving license, and surveyor dispatch.
+4. **Motor Theft (`motor_theft`)**: Total loss claims requiring certified FIR and Untraceable Final Report.
+5. **Life Insurance Death Claim (`life_death`)**: Nominee identity verification, bank mandate, and death certificate validation.
+
+### Seed Scenarios
+Seed files are located in `seed_data/insurance/`:
+- `policy_clean_health`: Rajan Nair — valid cashless claim with matching identity.
+- `policy_reimburse_mismatch`: Sunita Rao — itemized bill total mismatch vs discharge summary.
+- `policy_motor_outside_period`: Vikram Malhotra — incident occurred outside policy coverage window.
+- `policy_motor_missing_fir`: Ananya Sen — motor theft claim missing mandatory FIR and Untraceable report.
+- `policy_life_nominee_mismatch`: Ramesh Gupta / Kavita Sharma — surname mismatch requiring human review.
+

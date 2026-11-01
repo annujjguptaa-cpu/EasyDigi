@@ -1,0 +1,118 @@
+# Claim Types and Policies Configuration
+# SAMPLE CONFIGURATION FOR DEMO PURPOSES ONLY
+
+claim_types:
+  health_cashless:
+    name: "Health Cashless Claim"
+    product_type: "HEALTH"
+    required_documents:
+      - "POLICY_COPY"
+      - "ID_PROOF"
+      - "CLAIM_FORM"
+    optional_documents:
+      - "PRE_AUTH_FORM"
+      - "DOCTOR_PRESCRIPTION"
+    departments:
+      - "CLAIMS_INTAKE"
+      - "MEDICAL_TPA"
+      - "FRAUD_SIU"
+    deadlines:
+      intimation_hours: 48
+      pre_auth_decision_hours: 1
+      final_auth_after_discharge_hours: 3
+      settlement_days: 30
+
+  health_reimbursement:
+    name: "Health Reimbursement Claim"
+    product_type: "HEALTH"
+    required_documents:
+      - "POLICY_COPY"
+      - "ID_PROOF"
+      - "DISCHARGE_SUMMARY"
+      - "FINAL_BILL"
+      - "ITEMISED_BILL"
+      - "PAID_RECEIPT"
+      - "CANCELLED_CHEQUE"
+    optional_documents:
+      - "PRESCRIPTION"
+      - "LAB_REPORT"
+      - "PHARMACY_BILL"
+      - "IMPLANT_STICKER"
+    departments:
+      - "CLAIMS_INTAKE"
+      - "MEDICAL_TPA"
+      - "FRAUD_SIU"
+      - "PAYMENTS"
+    deadlines:
+      intimation_hours: 48
+      reimbursement_submission_days: 15
+      additional_doc_request_days: 7
+      settlement_days: 30
+
+  motor_own_damage:
+    name: "Motor Own Damage Claim"
+    product_type: "MOTOR"
+    required_documents:
+      - "POLICY_COPY"
+      - "ID_PROOF"
+      - "DRIVING_LICENCE"
+      - "RC"
+      - "SCENE_PHOTO"
+      - "REPAIR_ESTIMATE"
+    optional_documents:
+      - "FIR"
+      - "REPAIR_BILL"
+    departments:
+      - "CLAIMS_INTAKE"
+      - "SURVEYOR"
+      - "FRAUD_SIU"
+      - "PAYMENTS"
+    deadlines:
+      intimation_hours: 24
+      motor_docs_days: 15
+      surveyor_assignment_hours: 24
+      survey_report_days: 15
+      settlement_days: 30
+
+  motor_theft:
+    name: "Motor Theft Claim"
+    product_type: "MOTOR"
+    required_documents:
+      - "POLICY_COPY"
+      - "ID_PROOF"
+      - "RC"
+      - "FIR"
+      - "UNTRACEABLE_REPORT"
+    optional_documents:
+      - "KEYS_DEPOSITION_RECEIPT"
+    departments:
+      - "CLAIMS_INTAKE"
+      - "SURVEYOR"
+      - "FRAUD_SIU"
+      - "PAYMENTS"
+    deadlines:
+      intimation_hours: 24
+      motor_docs_days: 15
+      survey_report_days: 15
+      settlement_days: 30
+
+  life_death:
+    name: "Life Insurance Death Claim"
+    product_type: "LIFE"
+    required_documents:
+      - "POLICY_COPY"
+      - "DEATH_CERTIFICATE"
+      - "NOMINEE_ID"
+      - "NOMINEE_BANK_CHEQUE"
+    optional_documents:
+      - "HOSPITAL_DEATH_SUMMARY"
+      - "POST_MORTEM_REPORT"
+      - "POLICE_INQUEST_REPORT"
+    departments:
+      - "CLAIMS_INTAKE"
+      - "FRAUD_SIU"
+      - "PAYMENTS"
+    deadlines:
+      intimation_hours: 72
+      doc_submission_days: 30
+      settlement_days: 30

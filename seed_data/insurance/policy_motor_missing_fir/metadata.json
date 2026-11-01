@@ -1,0 +1,76 @@
+{
+  "scenario": "motor_missing_fir_photos",
+  "policy": {
+    "policy_number": "POL-MOT-2024-004",
+    "holder_name": "Ananya Sen",
+    "holder_id": "CUST_ANANYA_04",
+    "product_type": "MOTOR",
+    "start_date": "2024-01-01T00:00:00",
+    "end_date": "2024-12-31T23:59:59",
+    "sum_insured": 900000,
+    "deductible": 2000,
+    "co_pay_pct": 0.0,
+    "waiting_period_days": 0,
+    "status": "ACTIVE",
+    "nominee_name": "Debashis Sen",
+    "nominee_relation": "FATHER"
+  },
+  "claim": {
+    "claim_number": "CLM-MOT-2024-8804",
+    "type": "motor_theft",
+    "incident_date": "2024-05-12T22:30:00",
+    "claimant_name": "Ananya Sen",
+    "claimant_phone": "+919876543213",
+    "requested_amount": 900000,
+    "vehicle_reg": "KA 05 MN 5678",
+    "incident_description": "Vehicle stolen from parking lot overnight."
+  },
+  "documents": [
+    {
+      "doc_type": "POLICY_COPY",
+      "filename": "policy_schedule.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "policy_number": "POL-MOT-2024-004",
+        "holder_name": "Ananya Sen",
+        "sum_insured": 900000
+      }
+    },
+    {
+      "doc_type": "ID_PROOF",
+      "filename": "dl.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "id_type": "DL",
+        "holder_name": "Ananya Sen",
+        "id_last4": "1122"
+      }
+    },
+    {
+      "doc_type": "RC",
+      "filename": "rc.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "vehicle_reg": "KA 05 MN 5678",
+        "owner_name": "Ananya Sen"
+      }
+    }
+  ],
+  "missing_documents": [
+    "FIR",
+    "UNTRACEABLE_REPORT"
+  ],
+  "expected_outcome": {
+    "status": "QUERY_RAISED",
+    "flags": [
+      {
+        "flag_type": "MANDATORY_DOCUMENTS_MISSING",
+        "severity": "HIGH",
+        "evidence": {
+          "missing_required_docs": ["FIR", "UNTRACEABLE_REPORT"],
+          "note": "Theft claim cannot proceed to surveyor without certified Police FIR and Untraceable Final Form."
+        }
+      }
+    ]
+  }
+}

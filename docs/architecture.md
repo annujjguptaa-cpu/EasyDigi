@@ -2,7 +2,7 @@
 
 ```mermaid
 flowchart TD
-    subgraph Borrower["Borrower Device (Client-Side Encrypted Vault)"]
+    subgraph Borrower["Borrower / Claimant Device (Client-Side Encrypted Vault)"]
         PWA["Next.js PWA App<br/>(Client Web Crypto API)"]
         Vault[("Local Device Vault<br/>AES-GCM Encrypted")]
         PWA <--> Vault
@@ -13,22 +13,22 @@ flowchart TD
         Filter["PII-Masking Filter<br/>Logs & Payloads Scrubbed<br/>(Max 4 digits of Aadhaar/PAN)"]
     end
 
-    subgraph BackendAPI["DocFlow Backend API (FastAPI)"]
+    subgraph BackendAPI["DocFlow Shared Backend API (FastAPI)"]
         AuthRouter["OAuth / Auth Router"]
         ConsentEngine["Consent & Scope Engine<br/>(consent_logs immutable trail)"]
         DocService["Document Ingestion<br/>Masked Metadata Only"]
         
         subgraph DeterministicEngine["Deterministic Engine (Pure Python Code)"]
-            Rules["Deterministic Eligibility Engine<br/><b>CODE DECIDES ELIGIBILITY</b><br/>(Underwriting, Income, Cross-doc match)"]
+            Rules["Deterministic Eligibility & Coverage Engine<br/><b>CODE DECIDES ELIGIBILITY & COVERAGE</b><br/>(Underwriting, Income, Cross-doc match, Coverage rules)"]
         end
 
         subgraph LLMBoundary["LLM Provider (Gemini / Claude / Mock)"]
-            LLM["LLM Explainer & Gap Assistant<br/><b>NEVER SEES RAW FILES OR TOKENS</b><br/><b>NEVER DECIDES ELIGIBILITY</b><br/>Explains code results with citations"]
+            LLM["LLM Explainer & Gap Assistant<br/><b>NEVER SEES RAW FILES OR TOKENS</b><br/><b>NEVER DECIDES ELIGIBILITY OR COVERAGE</b><br/>Explains code results with citations"]
         end
     end
 
     subgraph StorageLayer["Data & Persistence"]
-        DB[(PostgreSQL / SQLite<br/>organisations, staff, docs, audit)]
+        DB[(PostgreSQL / SQLite<br/>organisations, staff, docs, audit,<br/>policies, claims, deadlines, fraud_flags)]
         RedisCache[(Redis<br/>OAuth PKCE state, 10m TTL)]
     end
 
@@ -36,6 +36,13 @@ flowchart TD
         KYCView["KYC Department Slice<br/>(Identity, Name Match, L4 Aadhaar)"]
         RiskView["Risk & Underwriting Slice<br/>(Income, Ratios, Deterministic Outcome)"]
         OpsView["Operations & Audit Slice<br/>(Immutable Consent & Approval Trail)"]
+    end
+
+    subgraph InsuranceModule["DocFlow Insurance Module (Claims Processing)"]
+        Intake["Claim Intake Agent (/claim/{token})"]
+        CoverageCalc["Deterministic Coverage Engine (YAML driven)"]
+        Deadlines["SLA & Deadline Engine (Health, Motor, Life)"]
+        InsDepts["Department Slices: Intake, Medical/TPA, Surveyor, Fraud/SIU, Payments"]
     end
 
     %% Flows
@@ -58,7 +65,23 @@ flowchart TD
     ConsentEngine -- Audit Trail --> OpsView
 
     AuthRouter & DocService -.-> Filter
+
+    %% Insurance Flows
+    Intake --> ConsentEngine
+    Intake --> DocService
+    Rules --> CoverageCalc
+    DocService --> Deadlines
+    CoverageCalc --> InsDepts
 ```
+
+## Insurance Module Architecture & Separation
+The Insurance module runs alongside the lending flow within the same shared API backend and reuses core secure components:
+1. **Mock DigiLocker Provider**: Reused for identity documents (PAN, Aadhaar masked, Driving Licence, Registration Certificate).
+2. **Device Vault & Hybrid Crypto**: Claim packages use AES-256-GCM client-side encryption and RSA-OAEP public key wrapping.
+3. **Deterministic Coverage Engine**: Coverage rules are YAML-configured and executed purely in deterministic Python code; the LLM NEVER decides coverage or approves/rejects a claim.
+4. **Single-Shot Consolidated Query**: Missing documents are gathered into a single consolidated request rather than intermittent requests.
+5. **Departmental Slicing**: Slices claims into Claims Intake, Medical/TPA, Surveyor, Fraud/SIU, and Payments.
+
 
 ## Security & Compliance Invariants
 1. **Never Collect Real Aadhaar/OTP in our UI**: Only redirected to official aggregator or explicit `DEMO ONLY` mock page.

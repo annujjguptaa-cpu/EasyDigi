@@ -1,0 +1,70 @@
+{
+  "scenario": "clean_health_cashless",
+  "policy": {
+    "policy_number": "POL-HLT-2024-001",
+    "holder_name": "Rajan Nair",
+    "holder_id": "CUST_RAJAN_01",
+    "product_type": "HEALTH",
+    "start_date": "2024-01-01T00:00:00",
+    "end_date": "2024-12-31T23:59:59",
+    "sum_insured": 500000,
+    "deductible": 5000,
+    "co_pay_pct": 10.0,
+    "waiting_period_days": 30,
+    "status": "ACTIVE",
+    "nominee_name": "Meera Nair",
+    "nominee_relation": "SPOUSE"
+  },
+  "claim": {
+    "claim_number": "CLM-HLT-2024-8801",
+    "type": "health_cashless",
+    "incident_date": "2024-06-15T10:00:00",
+    "claimant_name": "Rajan Nair",
+    "claimant_phone": "+919876543210",
+    "requested_amount": 120000,
+    "hospital_name": "Apollo Super Speciality Hospital",
+    "treatment": "Emergency Appendectomy"
+  },
+  "documents": [
+    {
+      "doc_type": "POLICY_COPY",
+      "filename": "policy_schedule.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "policy_number": "POL-HLT-2024-001",
+        "holder_name": "Rajan Nair",
+        "sum_insured": 500000,
+        "valid_upto": "2024-12-31"
+      }
+    },
+    {
+      "doc_type": "ID_PROOF",
+      "filename": "pan_card.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "id_type": "PAN",
+        "holder_name": "Rajan Nair",
+        "id_last4": "5678"
+      }
+    },
+    {
+      "doc_type": "CLAIM_FORM",
+      "filename": "cashless_request_form.pdf",
+      "status": "VERIFIED",
+      "masked_fields": {
+        "hospital_name": "Apollo Super Speciality Hospital",
+        "admission_date": "2024-06-15",
+        "estimated_cost": 120000,
+        "ailment": "Acute Appendicitis"
+      }
+    }
+  ],
+  "expected_outcome": {
+    "status": "COVERED",
+    "flags": [],
+    "deductions": {
+      "deductible": 5000,
+      "co_pay_pct": 10.0
+    }
+  }
+}
