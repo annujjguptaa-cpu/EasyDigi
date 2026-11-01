@@ -80,13 +80,13 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto flex flex-wrap items-end justify-between gap-4">
           <div>
             <span className="font-mono text-xs text-ink-muted uppercase tracking-widest block mb-1">
-              DOCFLOW × DJINN
+              EASYDIGI
             </span>
             <h1 className="font-serif text-3xl md:text-4xl text-ink font-normal leading-tight">
-              The First Djinn Wish Pack
+              EasyDigi
             </h1>
             <p className="font-sans text-sm text-ink-muted mt-1 max-w-md">
-              B2B lending document intelligence platform. Paper-first design. DPDPA-aligned consent. Code decides eligibility.
+              AI-powered lending document platform. Paper-first design. DPDPA-aligned consent. Code decides eligibility.
             </p>
           </div>
           <div className="flex gap-2">
@@ -169,7 +169,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="border-t border-hairline bg-surface px-6 py-3 flex items-center justify-between font-mono text-xs text-ink-muted">
-        <span>Powered by Djinn · DocFlow Platform · Demo Build 2026-11</span>
+        <span>Powered by EasyDigi · Demo Build 2026-11</span>
         <span>
           <a href="/design" className="underline hover:text-ink">Create your own wish →</a>
         </span>

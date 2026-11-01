@@ -24,7 +24,7 @@ export default function MockDigiLockerPage() {
     if (action === 'DENY') {
       setStatusMsg('Consent Denied. No documents or tokens will be issued.');
     } else {
-      setStatusMsg('Consent Allowed (Simulated). Redirecting back to DocFlow...');
+      setStatusMsg('Consent Allowed (Simulated). Redirecting back to EasyDigi...');
     }
   };
 
@@ -35,7 +35,7 @@ export default function MockDigiLockerPage() {
       <main className="max-w-md w-full p-6 mt-6 space-y-6">
         <Banner
           type="consent"
-          requester="DocFlow (Simulated Aggregator)"
+          requester="EasyDigi (Simulated Aggregator)"
           purpose="Simulated Identity Pull (Demo)"
           expiry="10 Minutes (PKCE TTL)"
         />

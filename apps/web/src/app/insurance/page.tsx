@@ -42,7 +42,7 @@ export default function InsurancePortalPage() {
       <header className="border-b border-hairline bg-surface px-6 py-4 flex flex-wrap items-center justify-between gap-4">
         <div>
           <span className="font-mono text-xs text-ink-muted uppercase">INSURANCE CLAIMS PROCESSING</span>
-          <h1 className="font-serif text-2xl text-ink font-normal">DocFlow Insurer Workspace</h1>
+          <h1 className="font-serif text-2xl text-ink font-normal">EasyDigi Insurer Workspace</h1>
         </div>
         <div className="flex gap-2">
           {(['01 INTIMATION', '02 EVIDENCE', '03 CHECKS', '04 REVIEW', '05 SETTLEMENT'] as const).map((stage) => {

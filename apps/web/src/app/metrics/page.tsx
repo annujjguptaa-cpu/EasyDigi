@@ -49,7 +49,7 @@ export default function MetricsPage() {
             <span className="font-mono text-xs text-ink-muted uppercase tracking-widest block">
               PLATFORM OPERATIONAL EFFICIENCY
             </span>
-            <h1 className="font-serif text-2xl text-ink font-normal">DocFlow Analytics & Readiness</h1>
+            <h1 className="font-serif text-2xl text-ink font-normal">EasyDigi Analytics & Readiness</h1>
           </div>
           <div className="font-mono text-xs text-ink-muted">
             LAST UPDATED: 2026-11-01 19:45 UTC
@@ -101,7 +101,7 @@ export default function MetricsPage() {
                 <thead>
                   <tr className="border-b border-hairline bg-paper/40 font-mono text-[11px] text-ink-muted uppercase">
                     <th className="p-3">METRIC</th>
-                    <th className="p-3">DOCFLOW PLATFORM</th>
+                    <th className="p-3">EASYDIGI</th>
                     <th className="p-3">INDUSTRY BASELINE (ASSUMPTION)</th>
                     <th className="p-3">EFFICIENCY GAIN</th>
                   </tr>

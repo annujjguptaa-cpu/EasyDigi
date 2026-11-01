@@ -114,7 +114,7 @@ export default function VaultPage() {
                 />
               </div>
               <div className="p-3 bg-amber-50 border border-amber-200 text-amber-900 text-xs rounded-[2px]">
-                <strong>Notice:</strong> DocFlow does not store passwords, PINs, or master keys. If you lose your passphrase, files cannot be recovered.
+                <strong>Notice:</strong> EasyDigi does not store passwords, PINs, or master keys. If you lose your passphrase, files cannot be recovered.
               </div>
               <Button type="submit" variant="primary" className="w-full">
                 UNLOCK MY VAULT

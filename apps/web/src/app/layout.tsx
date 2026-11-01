@@ -1,8 +1,8 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'DocFlow | Djinn Wish Pack',
-  description: 'Precision Instrument on Paper - B2B Lending Document Platform',
+  title: 'EasyDigi',
+  description: 'EasyDigi — AI-powered lending document platform. Paper-first design. DPDPA-aligned consent.',
 };
 
 export default function RootLayout({

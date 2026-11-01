@@ -57,7 +57,7 @@ export default function DesignSystemGalleryPage() {
       <header className="flex flex-wrap items-center justify-between border-b border-hairline pb-4 gap-4">
         <div>
           <span className="font-mono text-xs text-ink-muted uppercase tracking-widest block">
-            DOCFLOW DESIGN SYSTEM
+            EASYDIGI DESIGN SYSTEM
           </span>
           <h1 className="font-serif text-3xl text-ink font-normal tracking-tight mt-1">
             Precision Instrument on Paper

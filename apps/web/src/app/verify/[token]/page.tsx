@@ -16,9 +16,9 @@ export default function CustomerVerifyPage({ params }: { params: { token: string
   const [messages, setMessages] = useState([
     {
       role: 'agent',
-      text: 'Hello! I am your DocFlow assistant. We need 2 missing documents to complete your verification with Apex Mutual Bank.',
-      text_hi: 'नमस्ते! मैं आपका डॉकफ्लो सहायक हूँ। सत्यापन पूरा करने के लिए हमें 2 दस्तावेजों की आवश्यकता है।',
-      text_hinglish: 'Namaste! Main aapka DocFlow assistant hoon. Verification complete karne ke liye 2 missing documents chahiye.',
+      text: 'Hello! I am your EasyDigi assistant. We need 2 missing documents to complete your verification with Apex Mutual Bank.',
+      text_hi: 'नमस्ते! मैं आपका EasyDigi सहायक हूँ। सत्यापन पूरा करने के लिए हमें 2 दस्तावेजों की आवश्यकता है।',
+      text_hinglish: 'Namaste! Main aapka EasyDigi assistant hoon. Verification complete karne ke liye 2 missing documents chahiye.',
     },
   ]);
   const [inputVal, setInputVal] = useState('');
