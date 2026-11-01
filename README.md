@@ -139,7 +139,7 @@ To verify the full end-to-end integration across all applications and modules:
 cd apps/api
 python -m pytest tests/ -v
 ```
-All **56 tests** pass, covering:
+All **61 tests** pass, covering:
 - Clean slate validation (zero initial cases)
 - Single-use and 24h link expiration (410 Gone)
 - Selective document granting & consent locking
@@ -150,6 +150,7 @@ All **56 tests** pass, covering:
 - 5 fictional policyholder insurance claim seed scenarios
 - MockPolicyProvider verification, failure modes, and swappable provider interface
 - Claim intake conversational agent (/claim/{token}), tool calling, Aadhaar stripping guardrails, and single-shot consolidated queries
+- 19-classifier insurance document categorization, prompt injection guard, image quality detection, multi-page PDF merger, and PII-masked OCR extraction
 
 
 
