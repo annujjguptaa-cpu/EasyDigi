@@ -169,6 +169,32 @@ class MockDigiLockerProvider(DigiLockerProvider):
                 }
             ]
 
+        # Check if customer has motor documents (DL & RC)
+        if "motor" in customer_id:
+            return [
+                {
+                    "name": "PAN Verification Record",
+                    "doc_type": "PAN",
+                    "uri": "in.gov.pan/fictional-pan-004",
+                    "status": "ISSUED",
+                    "demo_only": True
+                },
+                {
+                    "name": "Driving Licence",
+                    "doc_type": "DRIVING_LICENCE",
+                    "uri": "in.gov.transport/fictional-dl-001",
+                    "status": "ISSUED",
+                    "demo_only": True
+                },
+                {
+                    "name": "Vehicle Registration Certificate (RC)",
+                    "doc_type": "RC",
+                    "uri": "in.gov.transport/fictional-rc-001",
+                    "status": "ISSUED",
+                    "demo_only": True
+                }
+            ]
+
         # Clean profile
         return [
             {

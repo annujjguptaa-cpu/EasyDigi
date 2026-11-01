@@ -78,3 +78,30 @@ class StorageProvider(ABC):
     async def retrieve_encrypted_blob(self, ref: str) -> bytes:
         """Retrieve pre-encrypted blob bytes"""
         pass
+
+
+class PolicyProvider(ABC):
+    """
+    Abstract interface for Policy data providers.
+    Fetches policy schedules, coverage limits, terms, and verifies policyholder validity.
+    """
+    @abstractmethod
+    async def get_policy(self, policy_number: str, holder_ref: Optional[str] = None) -> Optional[Dict[str, Any]]:
+        """Fetch policy details by policy number, optionally validating against holder reference"""
+        pass
+
+    @abstractmethod
+    async def verify_policy_for_claim(
+        self,
+        policy_number: str,
+        holder_name: str,
+        incident_date: Any
+    ) -> Dict[str, Any]:
+        """
+        Verify policy eligibility for a prospective claim:
+        - belongs to claimant/holder
+        - policy is ACTIVE
+        - incident occurred within [start_date, end_date]
+        """
+        pass
+
