@@ -1,0 +1,36 @@
+{
+  "customer_id": "cust_mismatch_002",
+  "name": "Priya S. Sharma",
+  "dob": "1994-11-22",
+  "email": "priya.sharma@example-fictional.com",
+  "profile_type": "NAME_MISMATCH",
+  "fictional_note": "Synthetic data. PAN shows 'Priya Sharma' while Aadhaar shows 'Priya Sunil Sharma'.",
+  "documents": [
+    {
+      "type": "PAN",
+      "masked_fields": {
+        "name": "Priya Sharma",
+        "dob": "1994-11-22",
+        "pan_masked": "BKDPA9876Q"
+      },
+      "status": "MISMATCH"
+    },
+    {
+      "type": "AADHAAR_OFFLINE",
+      "masked_fields": {
+        "name": "Priya Sunil Sharma",
+        "dob": "1994-11-22",
+        "id_last4": "8765"
+      },
+      "status": "MISMATCH"
+    },
+    {
+      "type": "SALARY_SLIP",
+      "masked_fields": {
+        "employer_name": "Horizon Digital Labs",
+        "monthly_net_pay": 72000.00
+      },
+      "status": "VERIFIED"
+    }
+  ]
+}

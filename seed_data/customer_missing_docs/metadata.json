@@ -1,0 +1,28 @@
+{
+  "customer_id": "cust_missing_003",
+  "name": "Amit Patel",
+  "dob": "1997-03-09",
+  "email": "amit.patel@example-fictional.com",
+  "profile_type": "MISSING_DOCS",
+  "fictional_note": "Synthetic data. Missing salary slip and marksheet.",
+  "documents": [
+    {
+      "type": "PAN",
+      "masked_fields": {
+        "name": "Amit Patel",
+        "dob": "1997-03-09",
+        "pan_masked": "XYZPA4567M"
+      },
+      "status": "VERIFIED"
+    },
+    {
+      "type": "AADHAAR_OFFLINE",
+      "masked_fields": {
+        "name": "Amit Patel",
+        "dob": "1997-03-09",
+        "id_last4": "1122"
+      },
+      "status": "VERIFIED"
+    }
+  ]
+}

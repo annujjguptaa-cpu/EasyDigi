@@ -1,0 +1,44 @@
+{
+  "customer_id": "cust_clean_001",
+  "name": "Rahul Verma",
+  "dob": "1992-05-14",
+  "email": "rahul.verma@example-fictional.com",
+  "profile_type": "CLEAN_FILE",
+  "fictional_note": "Synthetic data for testing. Full documents present and match perfectly.",
+  "documents": [
+    {
+      "type": "PAN",
+      "masked_fields": {
+        "name": "Rahul Verma",
+        "dob": "1992-05-14",
+        "pan_masked": "ABCDE1234F"
+      },
+      "status": "VERIFIED"
+    },
+    {
+      "type": "AADHAAR_OFFLINE",
+      "masked_fields": {
+        "name": "Rahul Verma",
+        "dob": "1992-05-14",
+        "id_last4": "4321"
+      },
+      "status": "VERIFIED"
+    },
+    {
+      "type": "SALARY_SLIP",
+      "masked_fields": {
+        "employer_name": "Apex Cloud Systems Pvt Ltd",
+        "monthly_net_pay": 85000.00
+      },
+      "status": "VERIFIED"
+    },
+    {
+      "type": "MARKSHEET",
+      "masked_fields": {
+        "degree_name": "Bachelor of Technology",
+        "passing_year": 2014
+      },
+      "status": "VERIFIED"
+    }
+  ]
+}

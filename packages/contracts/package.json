@@ -1,0 +1,7 @@
+{
+  "name": "@docflow/contracts",
+  "version": "0.1.0",
+  "description": "Shared JSON schemas and contracts between DocFlow frontend and backend",
+  "main": "index.js",
+  "license": "UNLICENSED"
+}

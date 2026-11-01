@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DocumentMetadata",
+  "description": "Metadata for customer documents. Strictly holds only masked fields and zero sensitive numbers/tokens.",
+  "type": "object",
+  "required": ["doc_type", "status", "masked_fields"],
+  "properties": {
+    "doc_id": { "type": "string", "format": "uuid" },
+    "doc_type": { 
+      "type": "string", 
+      "enum": ["PAN", "AADHAAR_OFFLINE", "SALARY_SLIP", "MARKSHEET", "BANK_STATEMENT"] 
+    },
+    "status": { 
+      "type": "string", 
+      "enum": ["PENDING", "VERIFIED", "REJECTED", "MISMATCH", "MISSING"] 
+    },
+    "encrypted_blob_ref": { "type": "string" },
+    "masked_fields": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "name": { "type": "string" },
+        "dob": { "type": "string" },
+        "id_last4": { "type": "string", "pattern": "^[0-9A-Z]{4}$" },
+        "pan_masked": { "type": "string", "pattern": "^[A-Z]{5}[0-9]{4}[A-Z]$" },
+        "employer_name": { "type": "string" },
+        "monthly_net_pay": { "type": "number" },
+        "degree_name": { "type": "string" },
+        "passing_year": { "type": "integer" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

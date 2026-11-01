@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ConsentLogRecord",
+  "type": "object",
+  "required": ["session_id", "scopes", "action", "timestamp", "ip_address"],
+  "properties": {
+    "session_id": { "type": "string" },
+    "scopes": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["KYC_VERIFICATION", "INCOME_ANALYSIS", "ACADEMIC_CHECK"] }
+    },
+    "action": { "type": "string", "enum": ["GRANT", "DENY", "REVOKE"] },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "ip_address": { "type": "string" },
+    "user_agent": { "type": "string" }
+  },
+  "additionalProperties": false
+}

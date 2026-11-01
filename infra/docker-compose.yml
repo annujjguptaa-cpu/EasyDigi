@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: docflow_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: docflow_user
+      POSTGRES_PASSWORD: docflow_password_demo
+      POSTGRES_DB: docflow_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docflow_user -d docflow_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: docflow_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: docflow_api
+    restart: always
+    environment:
+      DATABASE_URL: postgresql+asyncpg://docflow_user:docflow_password_demo@postgres:5432/docflow_db
+      REDIS_URL: redis://redis:6379/0
+      DIGILOCKER_PROVIDER: mock
+      LLM_PROVIDER: mock
+      OCR_PROVIDER: mock
+      STORAGE_PROVIDER: mock
+      VAULT_SECRET_KEY: demo-super-secret-vault-key-32b!
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: docflow_web
+    restart: always
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  redis_data:

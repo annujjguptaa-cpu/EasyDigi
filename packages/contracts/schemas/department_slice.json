@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DepartmentSlice",
+  "description": "Department scoped slice of verified documents ensuring zero cross-department data leakage.",
+  "type": "object",
+  "required": ["department", "request_id", "allowed_documents", "cited_summary"],
+  "properties": {
+    "department": { "type": "string", "enum": ["KYC", "RISK", "CREDIT", "OPERATIONS"] },
+    "request_id": { "type": "string", "format": "uuid" },
+    "allowed_documents": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "cited_summary": { "type": "string" },
+    "eligibility_outcome": {
+      "type": "object",
+      "required": ["status", "computed_by_code"],
+      "properties": {
+        "status": { "type": "string", "enum": ["ELIGIBLE", "INELIGIBLE", "MANUAL_REVIEW"] },
+        "computed_by_code": { "type": "boolean", "const": true },
+        "rules_triggered": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+  "additionalProperties": false
+}
