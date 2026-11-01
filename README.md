@@ -1,89 +1,227 @@
-# DocFlow: Wish Pack of Djinn, the AI Action Agent
+# EasyDigi — AI-Powered Lending Document Platform
 
-DocFlow is a privacy-first lending document verification platform and the first **Wish Pack** of **Djinn, the AI Action Agent**.
-
----
-
-## What is Real vs. What is Mocked
-
-| Component | Status | Details |
-|---|---|---|
-| **Deterministic Eligibility Engine** | **REAL** | Pure Python code evaluates loan parameters without LLM decision dependency. |
-| **Cross-Check Engine** | **REAL** | Tokenized fuzzy name and initial matching across documents. |
-| **Hybrid Crypto & Package Exchange** | **REAL** | Authenticated RSA-OAEP 2048 + AES-256-GCM encryption and digest verification. |
-| **PII Scrubbing Logger** | **REAL** | Regex interceptor continuously redacting Aadhaar, PAN, tokens, and OTPs. |
-| **Maker-Checker RBAC** | **REAL** | Department isolation and self-approval prevention enforced. |
-| **Wish Link Engine & Ledger** | **REAL** | 24h signed single-use links, bulk summoning, and immutable ledger with hashed IPs. |
-| **DigiLocker / Aggregator** | **MOCKED** | OAuth 2.0 PKCE flow labeled **DEMO ONLY**; `AggregatorProvider` stub ready for production keys. |
-| **OCR Provider** | **MOCKED** | Synthetic field extractor matching seed profiles; interface ready for AWS Textract/Tesseract. |
-| **LLM Provider** | **HYBRID** | MockLLMProvider with deterministic fallback + Gemini adapter ready when `GEMINI_API_KEY` is provided. |
+> Two clearly separate experiences, one seamless workflow.
 
 ---
 
-## Production Deployment Guide (Step-by-Step)
+## 2-Minute Demo Script
 
-### A. Environment Architecture
-- **Apps**: FastAPI Backend (`/apps/api`) and Next.js PWA Frontend (`/apps/web`).
-- **Data Layer**: PostgreSQL 16+ and Redis 7+.
+**Open two tabs (or two devices):**
 
-### B. Manual Inputs Required for Production
-1. **Domain Names & SSL**:
-   - `api.yourdomain.com` (pointing to FastAPI)
-   - `app.yourdomain.com` (pointing to Next.js)
-2. **Environment Secrets (`.env`)**:
-   - `DATABASE_URL`: `postgresql+asyncpg://<user>:<password>@<db-host>:5432/<dbname>`
-   - `REDIS_URL`: `redis://<redis-host>:6379/0`
-   - `VAULT_SECRET_KEY`: Generate a random 32-character key (`openssl rand -hex 16`)
-   - `DIGILOCKER_PROVIDER`: Set to `real`
-   - `DIGILOCKER_CLIENT_ID`: Issued by API Setu or TSP
-   - `DIGILOCKER_CLIENT_SECRET`: Issued by API Setu or TSP
-   - `DIGILOCKER_REDIRECT_URI`: `https://api.yourdomain.com/api/v1/auth/digilocker/callback`
-   - `GEMINI_API_KEY` (or `ANTHROPIC_API_KEY`): Production LLM API key
-   - `NEXT_PUBLIC_API_URL`: `https://api.yourdomain.com/api/v1`
+### Tab 1 — Bank Dashboard
+1. Go to **http://localhost:3000/bank/login**
+2. Click **employee@apexbank-demo.com** from the quick-select list → Sign In
+3. You land on the **Cases Dashboard** — see existing cases, notification bell in top-right
+4. Click **NEW REQUEST** (top-right)
+5. Fill in: Name = `Test Customer`, Phone = `XXXXXX9901`, Loan Type = `Home Loan`, tick all documents, Expiry = 24h
+6. Click **Create Request** → a secure link appears with Copy, WhatsApp, and SMS buttons
+7. **Copy the link** (or note it — it looks like `http://localhost:3000/c/xxxx...`)
 
-### C. Deployment Options
+### Tab 2 (Incognito) — Customer Link
+1. Paste the copied link into the incognito tab
+2. Read the consent screen → click **I AGREE & CONTINUE**
+3. You see the **DEMO ONLY** DigiLocker page — pick **Rahul Verma (Clean profile)**
+4. Watch documents appear with green status dots
+5. Click **All looks good → Submit**
+6. See **"Documents submitted successfully!"** with the case reference
 
-#### Option 1: Docker Compose (VM or AWS EC2)
-```bash
-# 1. Clone repository
-git clone <repo-url> EasyDigi && cd EasyDigi
+### Back to Tab 1
+- The **notification bell** shows a new badge (or a toast pops up)
+- Open the notification panel — you see: "link opened", "consent given", "documents received"
+- Click into the case → see the full **timeline**, **documents**, and **readiness score**
+- Click **SEND TO DEPARTMENTS** → select all departments → confirm
+- Navigate to **Departments** tab → see per-department status cards
+- Log out → log in as `credit_head@apexbank-demo.com` → see the final eligibility result
 
-# 2. Populate .env file in infra/
-cp infra/.env.example infra/.env
-# Edit infra/.env with your production secrets
+---
 
-# 3. Launch multi-container stack
-docker compose -f infra/docker-compose.yml up -d --build
+## Architecture
+
+```
+apps/
+  web/           Next.js 14 frontend  (port 3000)
+    /bank/*      Bank dashboard (staff login required)
+    /c/[token]   Customer link (no login, mobile-first)
+    /vault        Document vault
+    /design       Design system reference
+  api/           FastAPI backend       (port 8000)
+    /api/v1/bank/*      Bank staff endpoints (RBAC)
+    /api/v1/c/*         Customer token endpoints (public)
+    /api/v1/wishes/*    Djinn Wish Pack
+    /api/v1/digilocker/ Mock DigiLocker OAuth2
+packages/
+  ui/            Shared React components
+  contracts/     Shared TypeScript types & i18n
 ```
 
-#### Option 2: Managed Cloud (Render / Railway / AWS ECS + Vercel)
-1. **Database & Redis**: Deploy managed PostgreSQL (AWS RDS or Supabase) and Redis (AWS ElastiCache or Upstash).
-2. **Backend API**:
-   - Connect repository to Railway/Render/AWS App Runner pointing to `apps/api`.
-   - Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-3. **Frontend PWA**:
-   - Connect repository to Vercel pointing to `apps/web`.
-   - Set environment variable `NEXT_PUBLIC_API_URL=https://api.yourdomain.com/api/v1`.
+### State Machine
+```
+link_created → link_opened → consent_given → documents_received
+→ ready_for_review → sent_to_departments → in_review
+→ query_raised → decided
+```
+Every transition writes an **AuditLog** row and emits a **Notification** event to the relevant bank employee.
 
 ---
 
-## Quickstart & Local Testing
-```bash
-# Run FastAPI Backend
-cd apps/api
-pip install -e .
-python scripts/seed.py
-uvicorn app.main:app --reload --port 8000
+## Setup & Run (Local)
 
-# Run Next.js Frontend
-cd ../../apps/web
+### Prerequisites
+- Python 3.11+
+- Node.js 18+
+- Git
+
+### Backend
+```powershell
+cd apps/api
+pip install -r requirements.txt
+# (Optional) set PUBLIC_BASE_URL in .env
+python scripts/seed.py        # seeds DB + staff + demo case
+uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+API Docs: http://127.0.0.1:8000/docs
+
+### Frontend
+```powershell
+cd apps/web
 npm install
 npm run dev
 ```
+App: http://localhost:3000
 
-### Running Test Suite
-```bash
-cd apps/api
-pytest -v
+---
+
+## Deploy Guide
+
+### Environment Variables
+
+**Backend** (create `apps/api/.env`):
+```env
+PUBLIC_BASE_URL=https://your-domain.com
+ENVIRONMENT=production
+DATABASE_URL=sqlite+aiosqlite:///./easydigi.db
+VAULT_SECRET_KEY=<32-char-random-string>
+DIGILOCKER_PROVIDER=mock
+LLM_PROVIDER=mock
 ```
-All **36 tests** pass.
+
+**Frontend** (create `apps/web/.env.local`):
+```env
+NEXT_PUBLIC_API_URL=https://your-api-domain.com/api/v1
+```
+
+### Option A — Localhost with a tunnel (quickest demo)
+```powershell
+# Install cloudflared or ngrok, then:
+# Terminal 1: backend
+cd apps/api; uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+# Terminal 2: frontend  
+cd apps/web; npm run dev
+
+# Terminal 3: tunnel for the frontend
+cloudflared tunnel --url http://localhost:3000
+# or: ngrok http 3000
+
+# Copy the tunnel URL (e.g. https://abc.trycloudflare.com)
+# Set PUBLIC_BASE_URL=https://abc.trycloudflare.com in apps/api/.env
+# Restart backend
+```
+
+### Option B — Vercel + Railway
+1. **Backend → Railway**
+   - Connect GitHub repo, select `apps/api` as root
+   - Set env vars: `PUBLIC_BASE_URL`, `DATABASE_URL`, `VAULT_SECRET_KEY`
+   - Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+
+2. **Frontend → Vercel**
+   - Connect GitHub repo, select `apps/web` as root
+   - Build command: `npm run build`
+   - Output dir: `.next`
+   - Set env var: `NEXT_PUBLIC_API_URL=https://<railway-url>/api/v1`
+
+### Option C — Docker Compose
+```yaml
+# docker-compose.yml (place at repo root)
+version: '3.9'
+services:
+  api:
+    build: ./apps/api
+    environment:
+      - PUBLIC_BASE_URL=http://localhost:3000
+    ports: ["8000:8000"]
+  web:
+    build: ./apps/web
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+    ports: ["3000:3000"]
+    depends_on: [api]
+```
+
+---
+
+## Seeded Demo Accounts
+
+### Bank Staff
+| Email | Role | Department | Password |
+|-------|------|------------|---------|
+| employee@apexbank-demo.com | Relationship Employee | KYC | demo1234 |
+| kyc_officer@apexbank-demo.com | KYC Officer | KYC | demo1234 |
+| credit_manager@apexbank-demo.com | Credit Manager | CREDIT | demo1234 |
+| credit_head@apexbank-demo.com | Credit Head | CREDIT | demo1234 |
+| risk_analyst@apexbank-demo.com | Risk Analyst | RISK | demo1234 |
+| legal_officer@apexbank-demo.com | Legal Officer | LEGAL | demo1234 |
+| tech_officer@apexbank-demo.com | Technical Officer | TECHNICAL | demo1234 |
+| ops_specialist@apexbank-demo.com | Operations | OPERATIONS | demo1234 |
+
+### Customer Profiles (Demo DigiLocker)
+| Profile Key | Name | Scenario |
+|------------|------|----------|
+| clean_file | Rahul Verma | All documents present & verified |
+| name_mismatch | Priya S. Sharma | Name differs between PAN and Aadhaar |
+| missing_docs | Amit Patel | Only PAN present |
+
+### Pre-seeded Demo Case
+- Customer link: http://localhost:3000/c/demo-clean-token-00000001
+- Reference: CASE-DEMO-0001
+
+---
+
+## Security Hard Rules (never violate)
+1. Never collect real Aadhaar/OTP — only official aggregator redirect or clearly labeled DEMO ONLY
+2. Never persist full Aadhaar — max last 4 digits in DB and logs
+3. LLM never sees raw files, tokens, or full PII — masked JSON only
+4. Chat guardrails strip 12-digit numbers and OTP strings before LLM
+5. Code decides eligibility — LLM only explains/cites
+6. Djinn vocabulary for titles/buttons/states only — consent and legal text stays plain literal
+
+---
+
+## Djinn Vocabulary Reference
+
+| Standard term | Djinn term |
+|---|---|
+| Request | Wish |
+| Create request | SUMMON YOUR DJINN |
+| Shared link | /wish/{token} |
+| Agent working | "Djinn is working..." |
+| Completion | "Your wish is granted" |
+| Home Loan | Foundation Wish |
+| Education Loan | Scholar Wish |
+| Personal Loan | Opportunity Wish |
+| Business Loan | Growth Wish |
+| 01 Consent | 01 WISH |
+| 02 Documents | 02 DOCUMENTS |
+| 03 Checks | 03 CHECKS |
+| 04 Departments | 04 DEPARTMENTS |
+| 05 Result | 05 VERDICT |
+
+---
+
+## Running Tests
+```powershell
+cd apps/api
+python -m pytest tests/ -v
+```
+
+36 backend tests covering eligibility, PII logging, prompt injection, department workflow, wishes, consent slices, and the new bank/customer API.

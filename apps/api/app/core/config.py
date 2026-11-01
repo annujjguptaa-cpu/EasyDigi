@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     # Security & Encryption (AES key for local encrypted vault)
     VAULT_SECRET_KEY: str = "demo-super-secret-vault-key-32b!"
     
+    # Frontend public URL (used for customer links)
+    PUBLIC_BASE_URL: str = "http://localhost:3000"
+
     # DigiLocker Real Integration Stubs (Empty in demo)
     DIGILOCKER_CLIENT_ID: Optional[str] = None
     DIGILOCKER_CLIENT_SECRET: Optional[str] = None

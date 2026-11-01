@@ -18,6 +18,10 @@ class StaffRole(str, enum.Enum):
     RISK_ANALYST = "RISK_ANALYST"
     CREDIT_MANAGER = "CREDIT_MANAGER"
     OPERATIONS = "OPERATIONS"
+    RELATIONSHIP_EMPLOYEE = "RELATIONSHIP_EMPLOYEE"
+    CREDIT_HEAD = "CREDIT_HEAD"
+    LEGAL_OFFICER = "LEGAL_OFFICER"
+    TECHNICAL_OFFICER = "TECHNICAL_OFFICER"
 
 
 class Department(str, enum.Enum):
@@ -25,6 +29,8 @@ class Department(str, enum.Enum):
     RISK = "RISK"
     CREDIT = "CREDIT"
     OPERATIONS = "OPERATIONS"
+    LEGAL = "LEGAL"
+    TECHNICAL = "TECHNICAL"
 
 
 class RequestStatus(str, enum.Enum):
@@ -39,9 +45,15 @@ class RequestStatus(str, enum.Enum):
 class DocumentType(str, enum.Enum):
     PAN = "PAN"
     AADHAAR_OFFLINE = "AADHAAR_OFFLINE"
+    AADHAAR_MASKED = "AADHAAR_MASKED"
     SALARY_SLIP = "SALARY_SLIP"
     MARKSHEET = "MARKSHEET"
     BANK_STATEMENT = "BANK_STATEMENT"
+    ITR = "ITR"
+    FORM16 = "FORM16"
+    TITLE_DEED = "TITLE_DEED"
+    EC = "EC"
+    SIGNATURE = "SIGNATURE"
 
 
 class DocumentStatus(str, enum.Enum):
@@ -103,6 +115,14 @@ class VerificationRequest(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    created_by_staff_id = Column(String(36), ForeignKey("staff_users.id"), nullable=True)
+    link_token = Column(String(255), unique=True, nullable=True)
+    link_expires_at = Column(DateTime, nullable=True)
+    link_opened_at = Column(DateTime, nullable=True)
+    workflow_state = Column(String(50), default="link_created")
+    required_documents = Column(JSON, default=list)
+
+    creator = relationship("StaffUser", foreign_keys=[created_by_staff_id])
     organisation = relationship("Organisation", back_populates="verification_requests")
     sessions = relationship("CustomerSession", back_populates="verification_request")
     documents = relationship("Document", back_populates="verification_request")
@@ -223,3 +243,18 @@ class AuditLog(Base):
     details = Column(JSON, nullable=True)
     ip_address = Column(String(45), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class Notification(Base):
+    """In-app notifications for bank staff"""
+    __tablename__ = "notifications"
+
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    recipient_staff_id = Column(String(36), ForeignKey("staff_users.id"), nullable=False)
+    case_reference = Column(String(50), nullable=False)
+    event_type = Column(String(50), nullable=False)  # link_opened, consent_given, documents_received, query_answered
+    message = Column(String(500), nullable=False)
+    is_read = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    recipient = relationship("StaffUser", foreign_keys=[recipient_staff_id])

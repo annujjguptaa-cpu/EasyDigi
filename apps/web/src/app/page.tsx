@@ -4,9 +4,25 @@ import React from 'react';
 
 const PORTALS = [
   {
+    href: '/bank/dashboard',
+    label: 'EXPERIENCE 1: BANK DASHBOARD',
+    title: 'Bank Underwriting Workspace',
+    desc: 'Staff login, active cases, live notification bell, "Send to Departments", Maker-Checker RBAC.',
+    tag: 'EXPERIENCE 1',
+    tagColor: 'text-status-verified font-bold',
+  },
+  {
+    href: '/c/demo-clean-token-00000001',
+    label: 'EXPERIENCE 2: CUSTOMER LINK',
+    title: 'Customer Verification Link',
+    desc: 'Signed single-use link, plain-language consent, simulated DigiLocker persona sandbox, zero bank UI.',
+    tag: 'EXPERIENCE 2',
+    tagColor: 'text-status-flagged font-bold',
+  },
+  {
     href: '/wish/demo-wish-token-001',
     label: 'CUSTOMER WISH LINK',
-    title: 'Customer Portal',
+    title: 'Djinn Wish Pack Portal',
     desc: 'Trilingual consent flow. Grant, review and revoke document access.',
     tag: 'DJINN WISH PACK',
     tagColor: 'text-status-verified',

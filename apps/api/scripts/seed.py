@@ -36,9 +36,13 @@ async def seed_database():
 
         # 2. Create Staff Users across departments
         staff_roles = [
+            ("employee@apexbank-demo.com", StaffRole.RELATIONSHIP_EMPLOYEE, Department.KYC),
             ("kyc_officer@apexbank-demo.com", StaffRole.KYC_OFFICER, Department.KYC),
             ("risk_analyst@apexbank-demo.com", StaffRole.RISK_ANALYST, Department.RISK),
             ("credit_manager@apexbank-demo.com", StaffRole.CREDIT_MANAGER, Department.CREDIT),
+            ("credit_head@apexbank-demo.com", StaffRole.CREDIT_HEAD, Department.CREDIT),
+            ("legal_officer@apexbank-demo.com", StaffRole.LEGAL_OFFICER, Department.LEGAL),
+            ("tech_officer@apexbank-demo.com", StaffRole.TECHNICAL_OFFICER, Department.TECHNICAL),
             ("ops_specialist@apexbank-demo.com", StaffRole.OPERATIONS, Department.OPERATIONS)
         ]
         staff_map = {}
@@ -122,7 +126,32 @@ async def seed_database():
                 session.add(task)
 
         await session.commit()
-        logger.info("Successfully seeded 3 fictional customer profiles and bank staff.")
+
+        # 4. Seed a pre-configured demo case with link_token
+        demo_token = "demo-clean-token-00000001"
+        existing_demo = await session.execute(
+            select(VerificationRequest).where(VerificationRequest.link_token == demo_token)
+        )
+        if not existing_demo.scalar_one_or_none():
+            emp_staff = staff_map.get(Department.KYC)
+            demo_case = VerificationRequest(
+                organisation_id=org.id,
+                reference_code="CASE-DEMO-0001",
+                customer_fictional_id="cust_demo_clean",
+                customer_name="Rahul Verma",
+                loan_type="HOME_LOAN",
+                requested_amount=5000000,
+                status=RequestStatus.PENDING_CONSENT,
+                created_by_staff_id=emp_staff.id if emp_staff else None,
+                link_token=demo_token,
+                link_expires_at=datetime.utcnow() + timedelta(days=365),
+                workflow_state="link_created",
+                required_documents=["PAN", "AADHAAR_OFFLINE", "SALARY_SLIP", "BANK_STATEMENT"],
+            )
+            session.add(demo_case)
+            await session.commit()
+
+        logger.info("Successfully seeded 3 fictional customer profiles, bank staff, and demo case.")
 
 
 if __name__ == "__main__":

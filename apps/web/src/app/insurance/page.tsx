@@ -134,7 +134,7 @@ export default function InsurancePortalPage() {
                   </div>
                   <div className="flex justify-between items-center text-status-success">
                     <span>Policy Inception Lag:</span>
-                    <span>PASS (>90 DAYS)</span>
+                    <span>PASS (&gt;90 DAYS)</span>
                   </div>
                   <div className="flex justify-between items-center text-status-success">
                     <span>Duplicate Claim Scan:</span>
