@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: easydigi_api
+    restart: always
+    environment:
+      BANK_URL: http://localhost:3000
+      CUSTOMER_URL: http://localhost:3001
+      DIGILOCKER_URL: http://localhost:3002
+      API_URL: http://localhost:8000/api/v1
+      PUBLIC_BASE_URL: http://localhost:3001
+      DIGILOCKER_PROVIDER: mock
+      LLM_PROVIDER: mock
+      OCR_PROVIDER: mock
+      STORAGE_PROVIDER: mock
+      VAULT_SECRET_KEY: demo-super-secret-vault-key-32b!
+    ports:
+      - "8000:8000"
+
+  bank:
+    build:
+      context: ./apps/bank
+      dockerfile: Dockerfile
+    container_name: easydigi_bank
+    restart: always
+    environment:
+      NEXT_PUBLIC_BANK_URL: http://localhost:3000
+      NEXT_PUBLIC_CUSTOMER_URL: http://localhost:3001
+      NEXT_PUBLIC_DIGILOCKER_URL: http://localhost:3002
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+  customer:
+    build:
+      context: ./apps/customer
+      dockerfile: Dockerfile
+    container_name: easydigi_customer
+    restart: always
+    environment:
+      NEXT_PUBLIC_BANK_URL: http://localhost:3000
+      NEXT_PUBLIC_CUSTOMER_URL: http://localhost:3001
+      NEXT_PUBLIC_DIGILOCKER_URL: http://localhost:3002
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    ports:
+      - "3001:3001"
+    depends_on:
+      - api
+
+  mock-digilocker:
+    build:
+      context: ./apps/mock-digilocker
+      dockerfile: Dockerfile
+    container_name: easydigi_digilocker
+    restart: always
+    environment:
+      NEXT_PUBLIC_BANK_URL: http://localhost:3000
+      NEXT_PUBLIC_CUSTOMER_URL: http://localhost:3001
+      NEXT_PUBLIC_DIGILOCKER_URL: http://localhost:3002
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    ports:
+      - "3002:3002"
+    depends_on:
+      - api

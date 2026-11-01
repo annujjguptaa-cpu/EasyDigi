@@ -2,7 +2,7 @@
 Customer-facing public API — no auth required (token IS the credential).
 """
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from fastapi import APIRouter, HTTPException, Request, Depends
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,6 +21,35 @@ class ConsentBody(BaseModel):
 
 class DocumentSubmitBody(BaseModel):
     profile_key: str  # "clean_file" | "name_mismatch" | "missing_docs"
+    selected_documents: Optional[List[str]] = None
+
+
+class SelectDocumentsBody(BaseModel):
+    selected_documents: List[str]
+
+
+@router.post("/{token}/select-documents")
+async def select_documents(token: str, body: SelectDocumentsBody, db: AsyncSession = Depends(get_db)):
+    case = await _get_case_by_token(db, token)
+    case.required_documents = body.selected_documents
+    await transition_state(
+        db, case, "documents_selected", "CUSTOMER",
+        details={"selected": body.selected_documents},
+        notify_staff_id=case.created_by_staff_id,
+        notify_message=f"Customer selected {len(body.selected_documents)} documents for {case.reference_code}"
+    )
+    return {"workflow_state": case.workflow_state, "selected_documents": case.required_documents}
+
+
+@router.post("/{token}/decline")
+async def decline_wish(token: str, db: AsyncSession = Depends(get_db)):
+    case = await _get_case_by_token(db, token)
+    await transition_state(
+        db, case, "declined", "CUSTOMER",
+        notify_staff_id=case.created_by_staff_id,
+        notify_message=f"Customer declined document request for {case.reference_code}"
+    )
+    return {"workflow_state": "declined"}
 
 
 # Mock DigiLocker profile data for each seed customer
@@ -84,7 +113,7 @@ async def give_consent(token: str, body: ConsentBody, db: AsyncSession = Depends
     case = await _get_case_by_token(db, token)
     if not body.agreed:
         raise HTTPException(status_code=400, detail="Consent not given")
-    if case.workflow_state not in ("link_opened", "link_created"):
+    if case.workflow_state not in ("documents_selected", "link_opened", "link_created"):
         raise HTTPException(status_code=409, detail=f"Already in state: {case.workflow_state}")
     await transition_state(
         db, case, "consent_given", "CUSTOMER",
@@ -97,7 +126,7 @@ async def give_consent(token: str, body: ConsentBody, db: AsyncSession = Depends
 @router.post("/{token}/documents")
 async def submit_documents(token: str, body: DocumentSubmitBody, db: AsyncSession = Depends(get_db)):
     case = await _get_case_by_token(db, token)
-    if case.workflow_state not in ("consent_given", "link_opened", "link_created"):
+    if case.workflow_state not in ("consent_given", "documents_selected", "link_opened", "link_created"):
         raise HTTPException(status_code=409, detail=f"Cannot submit documents in state: {case.workflow_state}")
 
     profile = MOCK_PROFILES.get(body.profile_key)
@@ -107,24 +136,50 @@ async def submit_documents(token: str, body: DocumentSubmitBody, db: AsyncSessio
     # Clear previous docs if any for this case, add new docs
     await db.execute(delete(Document).where(Document.verification_request_id == case.id))
 
+    allowed_filter = body.selected_documents if body.selected_documents else case.required_documents
+    docs_to_add = []
     for doc_data in profile["documents"]:
-        doc = Document(
-            verification_request_id=case.id,
-            doc_type=DocumentType(doc_data["type"]),
-            status=DocumentStatus(doc_data["status"]),
-            masked_fields=doc_data["masked_fields"],
-        )
-        db.add(doc)
+        if not allowed_filter or doc_data["type"] in allowed_filter:
+            doc = Document(
+                verification_request_id=case.id,
+                doc_type=DocumentType(doc_data["type"]),
+                status=DocumentStatus(doc_data["status"]),
+                masked_fields=doc_data["masked_fields"],
+            )
+            db.add(doc)
+            docs_to_add.append(doc_data)
+
+    # Determine wish outcome: granted vs partial
+    required_types = set(case.required_documents or [])
+    fetched_types = {d["type"] for d in docs_to_add}
+    missing_required = required_types - fetched_types
+
+    new_state = "wish_partial" if missing_required else "wish_granted"
+
+    from app.services import mock_digilocker_service
+    # Record in DigiLocker activity & active consent
+    mock_digilocker_service.record_activity(
+        requester="Apex Mutual Bank",
+        purpose=f"Verification for {case.loan_type}",
+        documents=list(fetched_types),
+        expiry="24 Hours"
+    )
+    mock_digilocker_service.add_consent(
+        token=token,
+        requester="Apex Mutual Bank",
+        scopes=list(fetched_types)
+    )
 
     await transition_state(
-        db, case, "documents_received", "CUSTOMER",
-        details={"profile_key": body.profile_key, "doc_count": len(profile["documents"])},
+        db, case, new_state, "CUSTOMER",
+        details={"profile_key": body.profile_key, "doc_count": len(docs_to_add)},
         notify_staff_id=case.created_by_staff_id,
-        notify_message=f"Documents received for {case.reference_code} ({len(profile['documents'])} docs)",
+        notify_message=f"Wish granted: {len(docs_to_add)} documents received for {case.reference_code}" if new_state == "wish_granted" else f"Wish partly granted: {len(docs_to_add)} documents received for {case.reference_code}",
     )
     return {
-        "workflow_state": "documents_received",
-        "documents": [{"type": d["type"], "status": d["status"]} for d in profile["documents"]],
+        "workflow_state": new_state,
+        "documents": [{"type": d["type"], "status": d["status"]} for d in docs_to_add],
+        "missing_documents": list(missing_required)
     }
 
 

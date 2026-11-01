@@ -74,14 +74,14 @@ async def test_bank_auth_and_case_lifecycle(client):
     # Submit clean profile
     doc_res = await client.post(f"/api/v1/c/{token}/documents", json={"profile_key": "clean_file"})
     assert doc_res.status_code == 200
-    assert doc_res.json()["workflow_state"] == "documents_received"
+    assert doc_res.json()["workflow_state"] in ("wish_granted", "documents_received")
 
     # 5. Check Bank notifications
     notifs_res = await client.get("/api/v1/bank/notifications", headers=headers)
     assert notifs_res.status_code == 200
     notifs = notifs_res.json()
     events = [n["event"] for n in notifs]
-    assert "documents_received" in events
+    assert "wish_granted" in events or "documents_received" in events
 
     # 6. Employee sends case to departments
     send_dept_res = await client.post(

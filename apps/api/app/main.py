@@ -24,13 +24,18 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Enable CORS for Next.js frontend and configured base URLs
+# Enable CORS for Next.js frontends and inter-app communication
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+    "http://localhost:3002",
+    "http://127.0.0.1:3002",
 ]
-if settings.PUBLIC_BASE_URL and settings.PUBLIC_BASE_URL not in origins:
-    origins.append(settings.PUBLIC_BASE_URL)
+for extra_url in [settings.BANK_URL, settings.CUSTOMER_URL, settings.DIGILOCKER_URL, settings.PUBLIC_BASE_URL]:
+    if extra_url and extra_url not in origins:
+        origins.append(extra_url)
 
 app.add_middleware(
     CORSMiddleware,

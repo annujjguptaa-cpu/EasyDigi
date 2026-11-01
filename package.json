@@ -1,0 +1,20 @@
+{
+  "name": "easydigi-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:all": "concurrently --kill-others -n \"api,bank,cust,dlock\" -c \"blue,green,magenta,yellow\" \"npm run dev:api\" \"npm run dev:bank\" \"npm run dev:customer\" \"npm run dev:digilocker\"",
+    "dev:api": "cd apps/api && python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload",
+    "dev:bank": "cd apps/bank && npm run dev -- -p 3000",
+    "dev:customer": "cd apps/customer && npm run dev -- -p 3001",
+    "dev:digilocker": "cd apps/mock-digilocker && npm run dev -- -p 3002",
+    "build:all": "npm run build --prefix apps/bank && npm run build --prefix apps/customer && npm run build --prefix apps/mock-digilocker"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

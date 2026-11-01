@@ -6,7 +6,7 @@ from scripts.seed import seed_database
 
 
 @pytest.mark.asyncio
-async def test_seed_database_loads_three_customers():
+async def test_seed_database_clean_slate_and_staff_roles():
     # Run seed script
     await seed_database()
 
@@ -16,22 +16,11 @@ async def test_seed_database_loads_three_customers():
         orgs = org_res.scalars().all()
         assert len(orgs) >= 1
 
-        # Check 3 customers
-        req_res = await session.execute(select(VerificationRequest))
-        requests = req_res.scalars().all()
-        assert len(requests) >= 3
-
-        cust_ids = {r.customer_fictional_id for r in requests}
-        assert "cust_clean_001" in cust_ids
-        assert "cust_mismatch_002" in cust_ids
-        assert "cust_missing_003" in cust_ids
-
-        # Check documents are seeded with masked metadata
-        doc_res = await session.execute(select(Document))
-        docs = doc_res.scalars().all()
-        assert len(docs) >= 8
-        for d in docs:
-            # Ensure no full Aadhaar or secret leaks into masked fields
-            masked = d.masked_fields
-            if "id_last4" in masked:
-                assert len(masked["id_last4"]) == 4
+        # Check Staff Users are seeded across required roles
+        staff_res = await session.execute(select(StaffUser))
+        staff_users = staff_res.scalars().all()
+        assert len(staff_users) >= 4
+        emails = {u.email for u in staff_users}
+        assert "employee@apexbank-demo.com" in emails
+        assert "kyc_officer@apexbank-demo.com" in emails
+        assert "credit_head@apexbank-demo.com" in emails

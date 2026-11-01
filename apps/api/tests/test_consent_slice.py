@@ -8,20 +8,55 @@ from scripts.seed import seed_database
 
 @pytest.mark.asyncio
 async def test_department_slice_kyc_and_risk_isolation(client: AsyncClient):
-    # Ensure database has seeded customers
+    # Ensure database has seeded staff and create a slice test case
     await seed_database()
 
+    from datetime import datetime, timedelta
+    from app.db.models import Organisation, Document, DocumentType, DocumentStatus
     async with AsyncSessionLocal() as session:
-        # Get clean customer request
-        q = select(VerificationRequest).where(VerificationRequest.customer_fictional_id == "cust_clean_001")
-        res = await session.execute(q)
-        v_req = res.scalar_one()
+        org_res = await session.execute(select(Organisation).where(Organisation.code == "APEX_BANK_DEMO"))
+        org = org_res.scalar_one()
+
+        v_req = VerificationRequest(
+            organisation_id=org.id,
+            reference_code="REQ-TEST-SLICE",
+            customer_fictional_id="cust_clean_001",
+            customer_name="Rahul Verma",
+            loan_type="HOME_LOAN",
+            status="READY_FOR_REVIEW"
+        )
+        session.add(v_req)
+        await session.flush()
         req_id = v_req.id
 
-        # Get session
-        s_q = select(CustomerSession).where(CustomerSession.verification_request_id == req_id)
-        s_res = await session.execute(s_q)
-        c_sess = s_res.scalar_one()
+        c_sess = CustomerSession(
+            verification_request_id=req_id,
+            session_token="sess_test_slice_token",
+            status="INITIATED",
+            expires_at=datetime.utcnow() + timedelta(days=7)
+        )
+        session.add(c_sess)
+
+        # Add KYC + Income docs
+        session.add(Document(
+            verification_request_id=req_id,
+            doc_type=DocumentType.PAN,
+            status=DocumentStatus.VERIFIED,
+            masked_fields={"name": "Rahul Verma", "id_last4": "1234"}
+        ))
+        session.add(Document(
+            verification_request_id=req_id,
+            doc_type=DocumentType.AADHAAR_OFFLINE,
+            status=DocumentStatus.VERIFIED,
+            masked_fields={"name": "Rahul Verma", "id_last4": "5678"}
+        ))
+        session.add(Document(
+            verification_request_id=req_id,
+            doc_type=DocumentType.SALARY_SLIP,
+            status=DocumentStatus.VERIFIED,
+            masked_fields={"monthly_net_pay": 80000}
+        ))
+        await session.commit()
         session_token = c_sess.session_token
 
     # 1. Fetch consent session details

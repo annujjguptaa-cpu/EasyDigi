@@ -1,0 +1,67 @@
+:root {
+  /* EasyDigi Precision Instrument on Paper Design Tokens */
+  --bg-paper: #F5F1E8;
+  --bg-surface: #FBF9F4;
+  --ink-primary: #14130F;
+  --ink-muted: #6B675C;
+  --border-hairline: #D9D3C5;
+  
+  /* Status Colors */
+  --status-verified: #2B44D6;
+  --status-flagged: #D9531E;
+  --status-missing: #A8A396;
+  --status-error: #B3261E;
+  --status-success: #2E7D4F;
+
+  /* Typography Fallbacks */
+  --font-serif: 'Fraunces', 'Source Serif 4', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  --font-devanagari: 'Noto Sans Devanagari', sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-paper: #14130F;
+    --bg-surface: #1E1D19;
+    --ink-primary: #EDE8DB;
+    --ink-muted: #A8A396;
+    --border-hairline: #2E2C26;
+    
+    /* Contrast adjusted for dark paper/charcoal */
+    --status-verified: #6C82FF;
+    --status-flagged: #F07E4C;
+    --status-missing: #7C776D;
+    --status-error: #E5534B;
+    --status-success: #4EAD73;
+  }
+}
+
+/* Explicit class-based override support */
+[data-theme="dark"] {
+  --bg-paper: #14130F;
+  --bg-surface: #1E1D19;
+  --ink-primary: #EDE8DB;
+  --ink-muted: #A8A396;
+  --border-hairline: #2E2C26;
+  
+  --status-verified: #6C82FF;
+  --status-flagged: #F07E4C;
+  --status-missing: #7C776D;
+  --status-error: #E5534B;
+  --status-success: #4EAD73;
+}
+
+[data-theme="light"] {
+  --bg-paper: #F5F1E8;
+  --bg-surface: #FBF9F4;
+  --ink-primary: #14130F;
+  --ink-muted: #6B675C;
+  --border-hairline: #D9D3C5;
+  
+  --status-verified: #2B44D6;
+  --status-flagged: #D9531E;
+  --status-missing: #A8A396;
+  --status-error: #B3261E;
+  --status-success: #2E7D4F;
+}

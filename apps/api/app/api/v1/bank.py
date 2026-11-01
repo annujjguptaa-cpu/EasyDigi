@@ -100,7 +100,7 @@ async def create_new_case(
         required_docs=body.required_documents,
         ttl_hours=body.ttl_hours,
     )
-    customer_url = f"{settings.PUBLIC_BASE_URL}/c/{case.link_token}"
+    customer_url = f"{settings.CUSTOMER_URL}/w/{case.link_token}"
     return {
         "case_reference": case.reference_code,
         "case_id": case.id,
@@ -110,6 +110,34 @@ async def create_new_case(
         "whatsapp_stub": f"https://wa.me/?text=Please+complete+your+document+submission:+{customer_url}",
         "sms_stub": f"sms:?body=Please+complete+your+application:+{customer_url}",
     }
+
+
+@router.post("/reset-demo-data")
+async def reset_demo_data(
+    staff: StaffUser = Depends(get_current_staff),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Bank Admin Action: Wipes all cases, links, notifications, consents and share records.
+    Preserves staff users and DigiLocker accounts.
+    """
+    from sqlalchemy import delete
+    from app.db.models import CustomerSession, ConsentLog, SharePackage
+    from app.services import mock_digilocker_service
+
+    await db.execute(delete(Notification))
+    await db.execute(delete(DepartmentTask))
+    await db.execute(delete(Document))
+    await db.execute(delete(SharePackage))
+    await db.execute(delete(ConsentLog))
+    await db.execute(delete(CustomerSession))
+    await db.execute(delete(AuditLog))
+    await db.execute(delete(VerificationRequest))
+    await db.commit()
+
+    mock_digilocker_service.reset_digilocker_state()
+
+    return {"status": "SUCCESS", "message": "Demo data wiped clean. Fresh slate established."}
 
 
 @router.get("/cases/{case_id}")
@@ -163,7 +191,8 @@ async def send_case_to_departments(
     db: AsyncSession = Depends(get_db),
 ):
     case = await _fetch_case(db, case_id, staff.organisation_id)
-    if case.workflow_state not in ("documents_received", "ready_for_review"):
+    allowed_states = ("documents_received", "ready_for_review", "wish_granted", "wish_partial")
+    if case.workflow_state not in allowed_states:
         raise HTTPException(status_code=400, detail=f"Cannot send to departments from state: {case.workflow_state}")
     tasks = await send_to_departments(db, case, staff, body.departments)
     return {"tasks_created": len(tasks), "departments": [t.department.value for t in tasks]}
