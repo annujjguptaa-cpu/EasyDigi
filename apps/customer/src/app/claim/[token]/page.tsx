@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 interface Message {
   sender: "agent" | "user";
@@ -25,6 +25,7 @@ interface IntakeData {
 
 export default function ClaimIntakePage() {
   const params = useParams();
+  const router = useRouter();
   const token = params?.token as string;
 
   const [loading, setLoading] = useState(true);
@@ -144,9 +145,19 @@ export default function ClaimIntakePage() {
             {intake ? `Claim #${intake.claim_number} • ${intake.claim_type}` : "Secure Portal"}
           </p>
         </div>
-        <span className="text-[10px] font-mono uppercase bg-emerald-950 text-emerald-400 border border-emerald-800/60 px-2 py-0.5 rounded">
-          Client Encrypted
-        </span>
+        <div className="flex items-center gap-2">
+          {/* Vault shortcut button */}
+          <button
+            onClick={() => router.push(`/claim/${token}/vault`)}
+            className="text-xs bg-indigo-800/60 border border-indigo-700 text-indigo-300 hover:bg-indigo-700 px-2 py-1 rounded-lg transition-colors"
+            title="Open Claim Vault"
+          >
+            📁 Vault
+          </button>
+          <span className="text-[10px] font-mono uppercase bg-emerald-950 text-emerald-400 border border-emerald-800/60 px-2 py-0.5 rounded">
+            Client Encrypted
+          </span>
+        </div>
       </header>
 
       {/* Security Disclaimer Banner */}
