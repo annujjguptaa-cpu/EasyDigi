@@ -30,7 +30,7 @@ export default function BankLoginPage() {
     if (!email.trim()) { setError('Please enter or select an email.'); return; }
     setLoading(true);
     try {
-      const res = await fetch(`${API}/bank/bank/me`, { headers: authHeader(email.trim()) });
+      const res = await fetch(`${API}/bank/me`, { headers: authHeader(email.trim()) });
       if (res.ok) {
         const data = await res.json();
         storeUser({
