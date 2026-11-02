@@ -139,7 +139,7 @@ To verify the full end-to-end integration across all applications and modules:
 cd apps/api
 python -m pytest tests/ -v
 ```
-All **61 tests** pass, covering:
+All **91 tests** pass, covering:
 - Clean slate validation (zero initial cases)
 - Single-use and 24h link expiration (410 Gone)
 - Selective document granting & consent locking
@@ -151,13 +151,29 @@ All **61 tests** pass, covering:
 - MockPolicyProvider verification, failure modes, and swappable provider interface
 - Claim intake conversational agent (/claim/{token}), tool calling, Aadhaar stripping guardrails, and single-shot consolidated queries
 - 19-classifier insurance document categorization, prompt injection guard, image quality detection, multi-page PDF merger, and PII-masked OCR extraction
-
-
+- Device-side client encrypted vault (AES-256-GCM), originals checklist, policy wallet, and offline batch synchronization
+- Hybrid encrypted claim packages (AES-256-GCM + RSA-OAEP), single-token revocation, and 1-hour cashless pre-authorization SLAs
+- YAML-driven regulatory SLA deadline tracking (running, at-risk, breached) and unified event audit timeline
+- Ingestion consistency checks (bill vs discharge summary, incident within policy, nominee fuzzy match), fraud review flags, and one-shot consolidated query generation
+- Deterministic Python coverage engine (no LLM decisions), deductible/co-pay calculations, multi-department task routing, and human-in-the-loop maker-checker approvals
+- Instant mock NEFT settlement payout with masked bank accounts (last-4 only), UTR generation, and Insurance Ombudsman grievance escalation
 
 ---
 
 ## DocFlow Insurance Module
 The insurance module operates alongside the loan verification flow, sharing the core zero-knowledge vault, mock DigiLocker identity provider, and deterministic processing engine.
+
+### 10 Completed Milestone Prompts
+1. **Prompt 1 — Claim Domain Model & Seed Data**: 9 SQLAlchemy models, YAML configuration for 5 claim types, and 5 synthetic insurance scenarios.
+2. **Prompt 2 — Mock Policy Provider & Identity Sources**: `PolicyProvider` interface with `MockPolicyProvider` and `InsurerApiProvider` stubs; mock DigiLocker driver license and RC retrieval.
+3. **Prompt 3 — Claim Intake Agent & Mobile Chat**: Conversational AI assistant (`/claim/{token}`), tool calling, sensitive tone adjustment, and Aadhaar-blocking guardrails.
+4. **Prompt 4 — Evidence Capture & Document Processing**: 19 document classifiers, prompt injection defense, blur/crop detection, multi-page PDF merger, and masked OCR extractor.
+5. **Prompt 5 — Claim Vault (Device-Side)**: Client-side WebCrypto AES-256-GCM encryption, offline-first sync queue, originals checklist, and policy card wallet.
+6. **Prompt 6 — Insurer Consent & Claim Package**: Hybrid encryption (AES-256-GCM + RSA-OAEP), tokenized access package, 1-hour cashless pre-authorization requests, and revocable consent.
+7. **Prompt 7 — Deadline & Timeline Engine**: Regulatory SLA countdown tracking (`RUNNING`, `AT_RISK`, `BREACHED`, `MET`) and chronological unified audit timeline.
+8. **Prompt 8 — Insurer Ingestion, Consistency Checks & Fraud Flags**: Automated cross-checks for bill vs discharge discrepancies, incident validity, and nominee fuzzy matching; one-shot consolidated queries.
+9. **Prompt 9 — Department Routing, Coverage Engine & Human Approval**: Deterministic Python coverage computation with reason codes; multi-department routing; human officer approve/reject decisions.
+10. **Prompt 10 — Settlement, Grievance Escalation & Insurance Hub**: NEFT settlement payout with masked bank accounts, mock UTR generation, Ombudsman escalation, Bank Insurance Hub (`/insurance`), and a 6-minute pitch script.
 
 ### 5 Supported Claim Types
 1. **Health Cashless (`health_cashless`)**: Emergency/planned hospitalization with 1h pre-auth & 3h final authorization.

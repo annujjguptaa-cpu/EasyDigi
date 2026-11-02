@@ -11,13 +11,29 @@ async def test_insurance_seed_data_loaded():
     await seed_insurance_data()
 
     async with AsyncSessionLocal() as session:
-        # Check all 5 policies exist
-        policies_res = await session.execute(select(Policy))
+        # Check all 5 seeded policies exist
+        policies_res = await session.execute(
+            select(Policy).where(Policy.number.in_([
+                "POL-HLT-2024-001",
+                "POL-HLT-2024-002",
+                "POL-MOT-2023-003",
+                "POL-MOT-2024-004",
+                "POL-LIF-2022-005",
+            ]))
+        )
         policies = policies_res.scalars().all()
         assert len(policies) == 5
 
-        # Check all 5 claims exist
-        claims_res = await session.execute(select(Claim))
+        # Check all 5 seeded claims exist
+        claims_res = await session.execute(
+            select(Claim).where(Claim.claim_number.in_([
+                "CLM-HLT-2024-8801",
+                "CLM-HLT-2024-8802",
+                "CLM-MOT-2024-8803",
+                "CLM-MOT-2024-8804",
+                "CLM-LIF-2024-8805",
+            ]))
+        )
         claims = claims_res.scalars().all()
         assert len(claims) == 5
 
